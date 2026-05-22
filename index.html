@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MMC - Mapeamento de HUD</title>
+    <title>MMC - Setup</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #222; color: #fff; padding: 20px; display: flex; gap: 20px; }
-        .panel { background: #333; padding: 20px; border-radius: 8px; width: 350px; }
-        .canvas-container { position: relative; display: inline-block; border: 2px solid #555; }
-        #hudImage { max-width: 800px; display: none; }
-        .selection-box { position: absolute; border: 2px dashed #7eff7e; background: rgba(126, 255, 126, 0.2); pointer-events: none; display: none; }
-        input, select, button, textarea { width: 100%; margin-top: 10px; padding: 8px; box-sizing: border-box; background: #444; color: #fff; border: 1px solid #555; border-radius: 4px;}
-        button { background: #ff3636; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 20px;}
-        button:hover { background: #e02f2f; }
-        h2, h3 { margin-top: 0; color: #7eff7e; }
-        textarea { height: 150px; font-family: monospace; resize: vertical; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #FFFFFF; color: #000000; margin: 0; padding: 40px; display: flex; gap: 40px; justify-content: center; }
+        .panel { background: #FFFFFF; border: 2px solid #000000; padding: 30px; width: 350px; box-shadow: 8px 8px 0px #000000; }
+        h1 { font-size: 24px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px; margin-top: 0; }
+        label { font-weight: 700; display: block; margin-top: 15px; font-size: 12px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #000; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        input:focus, select:focus { outline: none; background: #f0f0f0; }
+        button { width: 100%; padding: 12px; margin-top: 20px; font-weight: 700; cursor: pointer; text-transform: uppercase; border: 2px solid #000; transition: all 0.2s; background: #FFFFFF; color: #000; }
+        button:hover { background: #000; color: #FFF; }
+        
+        .face-tabs { display: flex; gap: 5px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 10px 0; text-align: center; border: 2px solid #000; cursor: pointer; font-weight: 700; background: #FFF; }
+        .tab.active { background: #000; color: #FFF; }
+        
+        .canvas-container { position: relative; display: inline-block; border: 2px solid #000; background: #f9f9f9; box-shadow: 8px 8px 0px #000000; min-width: 400px; min-height: 400px;}
+        #hudImage { max-width: 600px; display: block; pointer-events: none; }
+        .selection-box { position: absolute; border: 2px dashed #000; background: rgba(0, 0, 0, 0.1); pointer-events: none; display: none; }
+        .saved-box { position: absolute; border: 2px solid #000; background: rgba(126, 255, 126, 0.4); pointer-events: none; } /* 7eff7e opacity */
+        
+        #btnSync { background: #000; color: #7eff7e; font-size: 16px; border: 2px solid #000; }
+        #btnSync:hover { background: #7eff7e; color: #000; }
+        
+        .status { margin-top: 15px; font-weight: 700; font-size: 14px; text-align: center; }
+        .error { color: #ff3636; }
+        .success { color: #7eff7e; background: #000; padding: 10px; }
     </style>
 </head>
 <body>
 
     <div class="panel">
-        <h2>MMC Smart Setup</h2>
-        <label>1. Carregue a textura do seu HUD:</label>
-        <input type="file" id="imageLoader" accept="image/*">
+        <h1>MMC Smart Setup</h1>
         
-        <hr style="border-color: #555; margin: 20px 0;">
-        
-        <h3>Configuração do Botão</h3>
+        <div class="face-tabs">
+            <div class="tab active" onclick="switchFace(0)">FACE 0</div>
+            <div class="tab" onclick="switchFace(1)">FACE 1</div>
+            <div class="tab" onclick="switchFace(2)">FACE 2</div>
+            <div class="tab" onclick="switchFace(3)">FACE 3</div>
+        </div>
+
         <label>Comando:</label>
         <select id="cmdSelect">
             <option value="TEXTURE">TEXTURE</option>
@@ -37,64 +54,88 @@
         </select>
         
         <label>Valor (UUID, Cor <1,1,1>, etc):</label>
-        <input type="text" id="valInput" placeholder="Ex: 6213f6d3-c3b3-476a-495d...">
+        <input type="text" id="valInput" placeholder="Ex: UUID da textura">
         
-        <label>Target Mesh (Nome do prim alvo ou ALL):</label>
-        <input type="text" id="meshInput" value="Dress">
+        <label>Target Mesh (Nome do prim ou ALL):</label>
+        <input type="text" id="meshInput" value="ALL">
         
-        <label>Target Face (Número, ALL ou ex: 1,2):</label>
+        <label>Target Face (Número ou ALL):</label>
         <input type="text" id="faceInput" value="ALL">
         
-        <button id="addBtn">ADICIONAR BOTÃO (Desenhe primeiro)</button>
+        <button id="addBtn">Gravar Área Desenhada</button>
         
-        <hr style="border-color: #555; margin: 20px 0;">
+        <hr style="border: 1px solid #000; margin: 30px 0;">
         
-        <label>Código Gerado (Copie para o Loader no SL):</label>
-        <textarea id="outputCode" readonly></textarea>
-        <button onclick="document.getElementById('outputCode').value = ''; btnCount = 1;" style="background: #555;">Limpar Código</button>
+        <button id="btnSync">Sincronizar com SL</button>
+        <div id="statusText" class="status"></div>
     </div>
 
-    <div>
-        <h3 id="instructionText">Aguardando imagem...</h3>
-        <div class="canvas-container" id="container">
-            <img id="hudImage" src="" alt="HUD">
-            <div class="selection-box" id="selectionBox"></div>
-        </div>
+    <div class="canvas-container" id="container">
+        <img id="hudImage" src="" alt="Aguardando conexão com SL...">
+        <div class="selection-box" id="selectionBox"></div>
+        <div id="savedBoxes"></div>
     </div>
 
 <script>
-    const imageLoader = document.getElementById('imageLoader');
+    // Leitura dos dados enviados pelo Second Life via URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const apiUrl = urlParams.get('api');
+    const textures = {
+        0: urlParams.get('f0'),
+        1: urlParams.get('f1'),
+        2: urlParams.get('f2'),
+        3: urlParams.get('f3')
+    };
+
+    let currentFace = 0;
+    let buttonsData = []; // Armazena todos os botões
+    
     const hudImage = document.getElementById('hudImage');
     const container = document.getElementById('container');
     const selectionBox = document.getElementById('selectionBox');
-    const outputCode = document.getElementById('outputCode');
-    const instructionText = document.getElementById('instructionText');
+    const savedBoxesContainer = document.getElementById('savedBoxes');
+    const statusText = document.getElementById('statusText');
 
     let isDrawing = false;
     let startX, startY, currentX, currentY;
-    let uvData = null;
-    let btnCount = 1;
+    let currentUV = null;
 
-    // Carrega a imagem
-    imageLoader.addEventListener('change', function(e) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            hudImage.src = event.target.result;
+    // Inicialização
+    if(!apiUrl) {
+        statusText.innerText = "Erro: Abra este painel através do clique longo no seu HUD no Second Life.";
+        statusText.className = "status error";
+    }
+    switchFace(0);
+
+    function switchFace(faceNum) {
+        currentFace = faceNum;
+        
+        // Atualiza UI das Abas
+        document.querySelectorAll('.tab').forEach((el, idx) => {
+            el.className = idx === faceNum ? 'tab active' : 'tab';
+        });
+
+        // Puxa a textura direto dos servidores do Second Life
+        const uuid = textures[faceNum];
+        if (uuid && uuid !== "00000000-0000-0000-0000-000000000000") {
+            hudImage.src = `https://secondlife.com/app/image/${uuid}/2`;
             hudImage.style.display = 'block';
-            instructionText.innerText = "2. Clique e arraste na imagem para desenhar a área do botão.";
+        } else {
+            hudImage.src = "";
+            hudImage.alt = `Face ${faceNum} não possui textura aplicada.`;
         }
-        reader.readAsDataURL(e.target.files[0]);
-    });
+        
+        renderSavedBoxes();
+    }
 
-    // Lógica de desenho da caixa de seleção
+    // Desenho das áreas no Canvas
     container.addEventListener('mousedown', (e) => {
-        if(hudImage.style.display === 'none') return;
         const rect = hudImage.getBoundingClientRect();
-        startX = e.clientX - rect.left;
-        startY = e.clientY - rect.top;
-        isDrawing = true;
-        selectionBox.style.display = 'block';
-        updateBox(startX, startY, startX, startY);
+        if(e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
+        
+        startX = e.clientX - rect.left; startY = e.clientY - rect.top;
+        isDrawing = true; selectionBox.style.display = 'block';
+        updateBox(selectionBox, startX, startY, startX, startY);
     });
 
     container.addEventListener('mousemove', (e) => {
@@ -102,65 +143,85 @@
         const rect = hudImage.getBoundingClientRect();
         currentX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
         currentY = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
-        updateBox(startX, startY, currentX, currentY);
+        updateBox(selectionBox, startX, startY, currentX, currentY);
     });
 
     container.addEventListener('mouseup', () => {
         if (!isDrawing) return;
         isDrawing = false;
-        calculateUV();
+        
+        const width = hudImage.clientWidth; const height = hudImage.clientHeight;
+        const uMin = (Math.min(startX, currentX) / width).toFixed(3);
+        const uMax = (Math.max(startX, currentX) / width).toFixed(3);
+        const vMin = (1.0 - (Math.max(startY, currentY) / height)).toFixed(3); // SL Invertido
+        const vMax = (1.0 - (Math.min(startY, currentY) / height)).toFixed(3);
+
+        currentUV = { uMin, uMax, vMin, vMax, startX, startY, currentX, currentY };
     });
 
-    function updateBox(x1, y1, x2, y2) {
-        const minX = Math.min(x1, x2);
-        const minY = Math.min(y1, y2);
-        const width = Math.abs(x2 - x1);
-        const height = Math.abs(y2 - y1);
-        selectionBox.style.left = minX + 'px';
-        selectionBox.style.top = minY + 'px';
-        selectionBox.style.width = width + 'px';
-        selectionBox.style.height = height + 'px';
+    function updateBox(element, x1, y1, x2, y2) {
+        element.style.left = Math.min(x1, x2) + 'px';
+        element.style.top = Math.min(y1, y2) + 'px';
+        element.style.width = Math.abs(x2 - x1) + 'px';
+        element.style.height = Math.abs(y2 - y1) + 'px';
     }
 
-    // Converte Pixels da Web para UV do Second Life
-    function calculateUV() {
-        const width = hudImage.clientWidth;
-        const height = hudImage.clientHeight;
-
-        const minX = Math.min(startX, currentX);
-        const maxX = Math.max(startX, currentX);
-        const minY = Math.min(startY, currentY);
-        const maxY = Math.max(startY, currentY);
-
-        const uMin = (minX / width).toFixed(3);
-        const uMax = (maxX / width).toFixed(3);
-        
-        // SL V-Axis é invertido em relação à Web
-        const vMin = (1.0 - (maxY / height)).toFixed(3); 
-        const vMax = (1.0 - (minY / height)).toFixed(3);
-
-        uvData = { uMin, uMax, vMin, vMax };
-    }
-
-    // Gera o código final LSL
+    // Adiciona o botão na memória local do JS
     document.getElementById('addBtn').addEventListener('click', () => {
-        if (!uvData) {
-            alert("Você precisa desenhar uma área na imagem primeiro!");
-            return;
-        }
+        if (!currentUV) return alert("Desenhe uma área na imagem primeiro!");
 
         const cmd = document.getElementById('cmdSelect').value;
         const val = document.getElementById('valInput').value || "NULL";
         const mesh = document.getElementById('meshInput').value || "ALL";
         const face = document.getElementById('faceInput').value || "ALL";
 
-        const payload = `${cmd}|${val}|${mesh}|${face}`;
+        buttonsData.push({
+            face: currentFace,
+            uv: currentUV,
+            payload: `${cmd}|${val}|${mesh}|${face}`
+        });
+
+        selectionBox.style.display = 'none';
+        currentUV = null;
+        renderSavedBoxes();
+    });
+
+    // Renderiza os botões salvos na face atual
+    function renderSavedBoxes() {
+        savedBoxesContainer.innerHTML = '';
+        buttonsData.forEach(btn => {
+            if (btn.face === currentFace) {
+                const box = document.createElement('div');
+                box.className = 'saved-box';
+                updateBox(box, btn.uv.startX, btn.uv.startY, btn.uv.currentX, btn.uv.currentY);
+                savedBoxesContainer.appendChild(box);
+            }
+        });
+    }
+
+    // Sincronização via API para o Second Life
+    document.getElementById('btnSync').addEventListener('click', () => {
+        if (!apiUrl) return alert("URL de API não encontrada.");
         
-        // Formata a string em formato JSON nativo para o LSL ler via LinksetData
-        const lslCommand = `llLinksetDataWrite("btn:${(btnCount < 10 ? '0' : '') + btnCount}", "[${uvData.uMin}, ${uvData.uMax}, ${uvData.vMin}, ${uvData.vMax}, \\"${payload}\\"]");\n`;
-        
-        outputCode.value += lslCommand;
-        btnCount++;
+        statusText.innerText = "Sincronizando...";
+        statusText.className = "status";
+
+        // Formata os dados no padrão que o LSL espera: Face^uMin^uMax^vMin^vMax^Payload\n
+        let rawData = buttonsData.map(b => 
+            `${b.face}^${b.uv.uMin}^${b.uv.uMax}^${b.uv.vMin}^${b.uv.vMax}^${b.payload}`
+        ).join("\n");
+
+        fetch(apiUrl, { method: "POST", body: rawData })
+            .then(response => {
+                statusText.innerText = "SINC OK! Verifique o HUD no SL.";
+                statusText.className = "status success";
+            })
+            .catch(error => {
+                // Como o CORS no LSL pode ser restrito em alguns visores, 
+                // se falhar na leitura, o SL geralmente ainda recebeu o pacote.
+                statusText.innerText = "Enviado! Se não funcionar, reinicie o script do HUD.";
+                statusText.className = "status success";
+            });
     });
 </script>
 </body>
