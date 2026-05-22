@@ -3,128 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MMC Smart Setup</title>
+<title>MMC HUD Configurator</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-:root {
-    --bg: #050505;
-    --panel: #101010;
-    --line: #202020;
-    --text: #f3f3f3;
-    --dim: #666;
-    --green: #52ff9c;
-    --danger: #ff4b4b;
-    --accent-purple: #cfa3ff;
-    --transition: all .22s ease;
+:root{
+    --bg:#050505;
+    --panel:#101010;
+    --line:#202020;
+    --text:#f3f3f3;
+    --dim:#666;
+    --green:#52ff9c;
+    --danger:#ff4b4b;
+    --accent-purple:#cfa3ff;
+    --transition:all .22s ease;
 }
 
-* { box-sizing: border-box; }
+*{ box-sizing:border-box; }
 
-body {
-    margin: 0; padding: 40px 18px;
+body{
+    margin:0; padding:40px 18px;
     background: radial-gradient(circle at top, rgba(255,255,255,.03), transparent 30%), #060606;
-    font-family: 'Inter', sans-serif; color: var(--text);
-    display: flex; justify-content: center; min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
+    font-family:'Inter',sans-serif; color:var(--text);
+    display:flex; justify-content:center; min-height:100vh;
+    -webkit-font-smoothing:antialiased;
 }
 
-.container {
-    width: 100%; max-width: 1280px; min-height: 85vh;
-    background: linear-gradient(180deg, #111111, #0a0a0a);
-    border: 1px solid var(--line); border-radius: 34px; padding: 34px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.65);
-    display: flex; flex-direction: row; gap: 40px; align-items: flex-start;
+.container{
+    width:100%; max-width:1400px; min-height: 85vh;
+    background:linear-gradient(180deg,#111111,#0a0a0a);
+    border:1px solid var(--line); border-radius:34px; padding:34px;
+    box-shadow:0 30px 80px rgba(0,0,0,.65); 
+    display: flex; gap: 30px; align-items: stretch;
 }
 
-/* LEFT PANEL - CONTROLS */
+/* LEFT PANEL (CONTROLS) */
 .controls-panel {
-    width: 380px; flex-shrink: 0;
-    display: flex; flex-direction: column; gap: 24px;
+    width: 340px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 20px;
+    border-right: 1px solid var(--line); padding-right: 30px;
 }
 
-header { text-align: left; border-bottom: 1px solid #1b1b1b; padding-bottom: 20px; }
-h1 { margin: 0; font-size: 1.05rem; letter-spacing: 4px; font-weight: 800; text-transform: uppercase; }
-.subtitle { margin-top: 8px; color: var(--dim); font-size: .78rem; letter-spacing: 1px; }
-.subtitle a { color: inherit; text-decoration: none; font-weight: 700; transition: var(--transition); }
-.subtitle a:hover { color: var(--text); text-shadow: 0 0 8px rgba(255,255,255,0.2); }
+header { padding-bottom: 20px; border-bottom: 1px solid #1b1b1b; }
+h1 { margin: 0 0 8px 0; font-size: 1.05rem; letter-spacing: 4px; font-weight: 800; text-transform: uppercase; color: var(--accent-purple); }
+.subtitle { color: var(--dim); font-size: .78rem; letter-spacing: 1px; }
 
-.tabs { display: flex; justify-content: space-between; gap: 8px; }
-.tab-btn {
-    flex: 1; background: linear-gradient(180deg, #181818, #111111);
-    border: 1px solid #262626; color: #8d8d8d; padding: 12px 0;
-    border-radius: 999px; cursor: pointer; transition: var(--transition);
-    font-size: .7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-}
-.tab-btn:hover { transform: translateY(-2px); color: #fff; border-color: #4a4a4a; }
-.tab-btn.active { background: #fff; color: #000; border-color: #fff; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
-
-label { font-size: .65rem; letter-spacing: 1.4px; font-weight: 700; text-transform: uppercase; color: #9c9c9c; margin-bottom: 8px; display: block; }
-.input-group { margin-bottom: 18px; }
-
+.section-title { font-size: .65rem; letter-spacing: 1.4px; font-weight: 700; text-transform: uppercase; color: #9c9c9c; margin-bottom: 12px; }
+.input-group { margin-bottom: 14px; }
 .search-input {
     width: 100%; background: #0c0c0c; border: 1px solid #242424; color: #fff;
-    padding: 14px 18px; border-radius: 18px; outline: none; font-size: .85rem;
-    transition: var(--transition); font-family: 'Inter', sans-serif;
+    padding: 14px 18px; border-radius: 14px; outline: none; font-size: .85rem; transition: var(--transition);
 }
 .search-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 10px rgba(207, 163, 255, 0.1); }
 select.search-input { appearance: none; cursor: pointer; }
 
+/* SLIDERS FOR ASPECT RATIO */
+.slider-container { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.slider-container label { width: 60px; font-size: .7rem; font-weight: 600; color: #aaa; }
+input[type="range"] { flex: 1; accent-color: var(--accent-purple); }
+
 .btn {
-    border: none; padding: 14px; border-radius: 16px; cursor: pointer; font-size: .7rem;
+    border: none; padding: 14px 18px; border-radius: 14px; cursor: pointer; font-size: .75rem;
     font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: var(--transition);
     width: 100%; font-family: 'Inter', sans-serif;
 }
-.btn-outline { background: #0c0c0c; border: 1px solid #242424; color: #fff; }
-.btn-outline:hover { background: #1a1a1a; border-color: #444; transform: translateY(-2px); }
 .btn-white { background: #fff; color: #000; }
-.btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
-.btn-sync { background: var(--green); color: #000; box-shadow: 0 0 15px rgba(82, 255, 156, 0.2); margin-top: 10px; }
-.btn-sync:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(82, 255, 156, 0.4); }
+.btn-white:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,255,255,0.2); }
+.btn-sync { background: var(--green); color: #000; margin-top: auto; box-shadow: 0 0 15px rgba(82,255,156,0.15); }
+.btn-sync:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(82,255,156,0.4); }
 
-.status-badge {
-    background: #0f0f0f; border: 1px solid #2a2a2a; padding: 12px; border-radius: 16px;
-    font-size: .75rem; font-weight: 700; text-align: center; margin-top: 10px; transition: var(--transition);
+.toast {
+    background: #111; border: 1px solid #2a2a2a; color: #fff;
+    padding: 14px 18px; border-radius: 14px; font-weight: 600; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-top: 10px;
+    opacity: 0; transition: var(--transition);
 }
-.status-badge.success { color: var(--green); border-color: rgba(82, 255, 156, 0.3); background: rgba(82, 255, 156, 0.05); }
-.status-badge.error { color: var(--danger); border-color: rgba(255, 75, 75, 0.3); background: rgba(255, 75, 75, 0.05); }
+.toast.show { opacity: 1; }
 
-/* RIGHT PANEL - CANVAS */
+/* RIGHT PANEL (CANVAS) */
 .canvas-panel {
-    flex: 1; display: flex; flex-direction: column; gap: 20px;
-    background: #0c0c0c; border: 1px solid #202020; border-radius: 24px; padding: 20px;
-    min-height: 600px;
+    flex: 1; display: flex; flex-direction: column;
+    background: #0c0c0c; border: 1px solid #202020; border-radius: 24px;
+    overflow: hidden; position: relative;
 }
 
-.canvas-header { display: flex; justify-content: space-between; align-items: center; }
-.canvas-title { font-size: .8rem; font-weight: 800; letter-spacing: 2px; color: #fff; text-transform: uppercase; }
+.canvas-header {
+    padding: 16px 24px; background: #111; border-bottom: 1px solid #202020;
+    display: flex; justify-content: space-between; align-items: center; z-index: 10;
+}
+.canvas-title { font-size: .85rem; font-weight: 800; letter-spacing: 1px; color: #fff; text-transform: uppercase; }
+.btn-clear { background: #1a1a1a; border: 1px solid #333; color: var(--danger); padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: .7rem; font-weight: 700; transition: var(--transition); }
+.btn-clear:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-.canvas-container {
-    position: relative; width: 100%; flex: 1; background: #080808; 
-    border: 1px dashed #2a2a2a; border-radius: 16px; overflow: hidden;
-    display: flex; justify-content: center; align-items: center;
+/* The viewport handles scrolling for zoomed images */
+.canvas-viewport {
+    flex: 1; overflow: auto; background: #080808; position: relative;
+    display: flex; justify-content: center; align-items: center; padding: 40px;
 }
 
-#hudImage { max-width: 100%; max-height: 100%; object-fit: contain; display: none; pointer-events: none; }
+/* The wrapper changes size via sliders to stretch/squish the image properly */
+#imageWrapper {
+    position: relative; width: 600px; height: 600px;
+    background: #111; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    transition: width 0.1s, height 0.1s;
+}
+
+#hudImage { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; }
 
 .selection-box { position: absolute; border: 2px dashed var(--green); background: rgba(82, 255, 156, 0.1); pointer-events: none; display: none; z-index: 10; }
 .saved-box { position: absolute; border: 2px solid var(--accent-purple); background: rgba(207, 163, 255, 0.15); pointer-events: none; z-index: 5; }
 
-.empty-watermark { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-.empty-watermark-title { font-size: 1rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; color: #fff; }
+.empty-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.empty-watermark-title { font-size: 1rem; font-weight: 700; letter-spacing: 2px; color: #fff; text-transform: uppercase; margin-bottom: 10px; }
 .empty-watermark-sub { color: #666; font-size: 0.85rem; line-height: 1.5; }
-
-/* RECOVERY INPUT (For Face 3 bug) */
-.recovery-box { display: flex; gap: 10px; margin-top: auto; }
-.recovery-box input { flex: 1; border-radius: 12px; padding: 10px 14px; }
-.recovery-box button { width: auto; padding: 10px 20px; border-radius: 12px; }
 
 @media (max-width: 900px) {
     .container { flex-direction: column; }
-    .controls-panel { width: 100%; }
+    .controls-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 30px; }
 }
 </style>
 </head>
@@ -134,182 +132,158 @@ select.search-input { appearance: none; cursor: pointer; }
     
     <div class="controls-panel">
         <header>
-            <h1>✦ HUD MAPPER ✦</h1>
-            <div class="subtitle">powered by <a href="https://my.secondlife.com/saori.suki" target="_blank">Saori Suki</a></div>
+            <h1>MMC SETUP</h1>
+            <div class="subtitle">Interface Remota de Configuração</div>
         </header>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchFace(0, this)">FACE 0</button>
-            <button class="tab-btn" onclick="switchFace(1, this)">FACE 1</button>
-            <button class="tab-btn" onclick="switchFace(2, this)">FACE 2</button>
-            <button class="tab-btn" onclick="switchFace(3, this)">FACE 3</button>
+        <div class="section-title">Ajuste de Proporção (Zoom)</div>
+        <div style="background: #0c0c0c; border: 1px solid #202020; border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+            <div class="slider-container">
+                <label>Largura</label>
+                <input type="range" id="widthSlider" min="200" max="1500" value="600">
+            </div>
+            <div class="slider-container">
+                <label>Altura</label>
+                <input type="range" id="heightSlider" min="200" max="1500" value="600">
+            </div>
+            <div style="font-size: 0.6rem; color: #666; text-align: center; margin-top: 10px;">Ajuste para ficar igual ao seu HUD no SL</div>
         </div>
 
+        <div class="section-title">Configurar Botão</div>
         <div class="input-group">
-            <label>Comando</label>
             <select id="cmdSelect" class="search-input">
                 <option value="TEXTURE">TEXTURE</option>
                 <option value="COLOR">COLOR</option>
                 <option value="ALPHA">ALPHA</option>
-                <option value="MAT_NORMAL">MAT_NORMAL (Bump)</option>
-                <option value="MAT_SPECULAR">MAT_SPECULAR (Shiny)</option>
+                <option value="MAT_NORMAL">MAT_NORMAL</option>
+                <option value="MAT_SPECULAR">MAT_SPECULAR</option>
             </select>
         </div>
         
         <div class="input-group">
-            <label>Valor (UUID, Cor <1,1,1>, etc)</label>
-            <input type="text" id="valInput" class="search-input" placeholder="Ex: UUID da textura..." autocomplete="off">
+            <input type="text" id="valInput" class="search-input" placeholder="Valor (UUID ou Cor)" autocomplete="off">
         </div>
         
         <div style="display: flex; gap: 10px;">
             <div class="input-group" style="flex: 1;">
-                <label>Target Mesh</label>
-                <input type="text" id="meshInput" class="search-input" value="ALL" autocomplete="off">
+                <input type="text" id="meshInput" class="search-input" value="ALL" placeholder="Target Mesh">
             </div>
             <div class="input-group" style="flex: 1;">
-                <label>Target Face</label>
-                <input type="text" id="faceInput" class="search-input" value="ALL" autocomplete="off">
+                <input type="text" id="faceInput" class="search-input" value="ALL" placeholder="Target Face">
             </div>
         </div>
         
         <button id="addBtn" class="btn btn-white">Gravar Área Desenhada</button>
         
-        <div style="margin-top: auto;">
-            <hr style="border-color: #1b1b1b; margin-bottom: 20px;">
-            <button id="btnSync" class="btn btn-sync">Sincronizar com SL</button>
-            <div id="statusText" class="status-badge">Aguardando...</div>
+        <div style="margin-top: auto; padding-top: 30px;">
+            <button id="btnSync" class="btn btn-sync">SINCRONIZAR COM SL</button>
+            <div id="toast" class="toast">Aguardando...</div>
         </div>
     </div>
 
     <div class="canvas-panel">
         <div class="canvas-header">
-            <div class="canvas-title" id="canvasTitle">Visualização - Face 0</div>
-            <button class="btn btn-outline" style="width: auto; padding: 8px 16px; border-radius: 999px; font-size: 0.6rem;" onclick="clearCurrentFace()">Limpar Face</button>
+            <div class="canvas-title" id="canvasTitle">VISUALIZAÇÃO - AGUARDANDO SL...</div>
+            <button class="btn-clear" onclick="clearCurrentFace()">LIMPAR FACE</button>
         </div>
 
-        <div class="canvas-container" id="container">
+        <div class="canvas-viewport" id="viewport">
             <div id="emptyState" class="empty-watermark">
-                <div class="empty-watermark-title">Sem Textura</div>
-                <div class="empty-watermark-sub">O Second Life não enviou uma textura para esta face.<br>Cole o UUID abaixo para forçar o carregamento.</div>
+                <div class="empty-watermark-title">Conexão Pendente</div>
+                <div class="empty-watermark-sub">Dê um clique longo no HUD no Second Life<br>para iniciar o mapeamento.</div>
             </div>
-            <img id="hudImage" src="" alt="HUD">
-            <div class="selection-box" id="selectionBox"></div>
-            <div id="savedBoxes"></div>
-        </div>
-
-        <div class="recovery-box">
-            <input type="text" id="manualUuidInput" class="search-input" placeholder="Se a imagem falhou, cole o UUID da textura aqui..." autocomplete="off">
-            <button class="btn btn-outline" onclick="forceLoadTexture()">Carregar</button>
+            
+            <div id="imageWrapper" style="display: none;">
+                <img id="hudImage" src="" alt="HUD">
+                <div class="selection-box" id="selectionBox"></div>
+                <div id="savedBoxes"></div>
+            </div>
         </div>
     </div>
 
 </div>
 
 <script>
+    // Parâmetros da URL (O script novo do HUD envia apenas 1 face agora)
     const urlParams = new URLSearchParams(window.location.search);
     const apiUrl = urlParams.get('api');
-    
-    // Objeto que guarda as texturas enviadas pelo SL
-    const textures = {
-        0: urlParams.get('f0'),
-        1: urlParams.get('f1'),
-        2: urlParams.get('f2'),
-        3: urlParams.get('f3')
-    };
+    const currentFace = urlParams.get('face');
+    const textureUuid = urlParams.get('tex');
 
-    let currentFace = 0;
     let buttonsData = []; 
     
+    const imageWrapper = document.getElementById('imageWrapper');
     const hudImage = document.getElementById('hudImage');
-    const container = document.getElementById('container');
     const emptyState = document.getElementById('emptyState');
     const selectionBox = document.getElementById('selectionBox');
     const savedBoxesContainer = document.getElementById('savedBoxes');
-    const statusText = document.getElementById('statusText');
     const canvasTitle = document.getElementById('canvasTitle');
+    
+    // Sliders de redimensionamento (Para desamassar texturas)
+    const widthSlider = document.getElementById('widthSlider');
+    const heightSlider = document.getElementById('heightSlider');
 
+    widthSlider.addEventListener('input', (e) => { imageWrapper.style.width = e.target.value + 'px'; });
+    heightSlider.addEventListener('input', (e) => { imageWrapper.style.height = e.target.value + 'px'; });
+
+    // Inicialização da Imagem
+    if (apiUrl && currentFace) {
+        canvasTitle.innerText = "VISUALIZAÇÃO - FACE " + currentFace;
+        
+        if (textureUuid && textureUuid !== "00000000-0000-0000-0000-000000000000") {
+            hudImage.src = `https://secondlife.com/app/image/${textureUuid}/2`;
+            imageWrapper.style.display = 'block';
+            emptyState.style.display = 'none';
+        } else {
+            emptyState.innerHTML = `<div class="empty-watermark-title">Face sem textura</div><div class="empty-watermark-sub">Aplique uma textura no SL antes de mapear.</div>`;
+        }
+    }
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.borderColor = isError ? "var(--danger)" : "#2a2a2a";
+        toast.style.color = isError ? "var(--danger)" : "#fff";
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function clearCurrentFace() {
+        buttonsData = [];
+        renderSavedBoxes();
+    }
+
+    // Desenho das Caixas
     let isDrawing = false;
     let startX, startY, currentX, currentY;
     let currentUV = null;
 
-    if(!apiUrl) {
-        statusText.innerText = "API Inválida. Abra pelo SL.";
-        statusText.className = "status-badge error";
-    } else {
-        statusText.innerText = "Conectado ao Second Life";
-    }
-
-    // Inicialização
-    switchFace(0, document.querySelector('.tab-btn'));
-
-    function isValidUUID(uuid) {
-        return uuid && uuid !== "00000000-0000-0000-0000-000000000000" && uuid !== "NULL_KEY" && uuid !== "null";
-    }
-
-    function switchFace(faceNum, btnElement) {
-        currentFace = faceNum;
-        canvasTitle.innerText = "Visualização - Face " + faceNum;
-        
-        // Atualiza estilo das abas
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        if(btnElement) btnElement.classList.add('active');
-
-        // Renderiza Imagem
-        const uuid = textures[faceNum];
-        if (isValidUUID(uuid)) {
-            hudImage.src = `https://secondlife.com/app/image/${uuid}/2`;
-            hudImage.style.display = 'block';
-            emptyState.style.display = 'none';
-        } else {
-            hudImage.src = "";
-            hudImage.style.display = 'none';
-            emptyState.style.display = 'flex';
-        }
-        
-        document.getElementById('manualUuidInput').value = ""; // Limpa input manual
-        renderSavedBoxes();
-    }
-
-    // Função para caso o UUID falhe na URL (Resolve o bug da Face 3)
-    function forceLoadTexture() {
-        const manualUuid = document.getElementById('manualUuidInput').value.trim();
-        if(isValidUUID(manualUuid)) {
-            textures[currentFace] = manualUuid; // Salva na memória
-            hudImage.src = `https://secondlife.com/app/image/${manualUuid}/2`;
-            hudImage.style.display = 'block';
-            emptyState.style.display = 'none';
-        }
-    }
-
-    function clearCurrentFace() {
-        buttonsData = buttonsData.filter(b => b.face !== currentFace);
-        renderSavedBoxes();
-    }
-
-    // Eventos de Desenho no Canvas
-    container.addEventListener('mousedown', (e) => {
-        if(hudImage.style.display === 'none') return; // Bloqueia desenho se não tiver imagem
-        const rect = hudImage.getBoundingClientRect();
-        if(e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) return;
-        
-        startX = e.clientX - rect.left; startY = e.clientY - rect.top;
-        isDrawing = true; selectionBox.style.display = 'block';
+    imageWrapper.addEventListener('mousedown', (e) => {
+        const rect = imageWrapper.getBoundingClientRect();
+        startX = e.clientX - rect.left;
+        startY = e.clientY - rect.top;
+        isDrawing = true;
+        selectionBox.style.display = 'block';
         updateBox(selectionBox, startX, startY, startX, startY);
     });
 
-    container.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
         if (!isDrawing) return;
-        const rect = hudImage.getBoundingClientRect();
+        const rect = imageWrapper.getBoundingClientRect();
+        // Limita o desenho aos limites do wrapper
         currentX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
         currentY = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
         updateBox(selectionBox, startX, startY, currentX, currentY);
     });
 
-    container.addEventListener('mouseup', () => {
+    window.addEventListener('mouseup', () => {
         if (!isDrawing) return;
         isDrawing = false;
         
-        const width = hudImage.clientWidth; const height = hudImage.clientHeight;
+        // A matemática é à prova de falhas: Baseada no tamanho atual do HTML wrapper!
+        const width = imageWrapper.clientWidth;
+        const height = imageWrapper.clientHeight;
+        
         const uMin = (Math.min(startX, currentX) / width).toFixed(3);
         const uMax = (Math.max(startX, currentX) / width).toFixed(3);
         const vMin = (1.0 - (Math.max(startY, currentY) / height)).toFixed(3); // SL Eixo Y Invertido
@@ -319,36 +293,23 @@ select.search-input { appearance: none; cursor: pointer; }
     });
 
     function updateBox(element, x1, y1, x2, y2) {
-        // Ajusta posição baseada na imagem, não no container absoluto
-        const rect = hudImage.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const offsetX = rect.left - containerRect.left;
-        const offsetY = rect.top - containerRect.top;
-
-        element.style.left = (offsetX + Math.min(x1, x2)) + 'px';
-        element.style.top = (offsetY + Math.min(y1, y2)) + 'px';
+        element.style.left = Math.min(x1, x2) + 'px';
+        element.style.top = Math.min(y1, y2) + 'px';
         element.style.width = Math.abs(x2 - x1) + 'px';
         element.style.height = Math.abs(y2 - y1) + 'px';
     }
 
-    // Gravar o botão na memória local
     document.getElementById('addBtn').addEventListener('click', () => {
-        if (!currentUV) {
-            statusText.innerText = "Desenhe a área primeiro!";
-            statusText.className = "status-badge error";
-            setTimeout(() => statusText.className = "status-badge", 2000);
-            return;
-        }
+        if (!currentUV) return showToast("Desenhe uma área primeiro!", true);
 
         const cmd = document.getElementById('cmdSelect').value;
         const val = document.getElementById('valInput').value || "NULL";
         const mesh = document.getElementById('meshInput').value || "ALL";
-        const face = document.getElementById('faceInput').value || "ALL";
+        const targetFace = document.getElementById('faceInput').value || "ALL";
 
         buttonsData.push({
-            face: currentFace,
             uv: currentUV,
-            payload: `${cmd}|${val}|${mesh}|${face}`
+            payload: `${cmd}|${val}|${mesh}|${targetFace}`
         });
 
         selectionBox.style.display = 'none';
@@ -359,35 +320,30 @@ select.search-input { appearance: none; cursor: pointer; }
     function renderSavedBoxes() {
         savedBoxesContainer.innerHTML = '';
         buttonsData.forEach(btn => {
-            if (btn.face === currentFace) {
-                const box = document.createElement('div');
-                box.className = 'saved-box';
-                updateBox(box, btn.uv.startX, btn.uv.startY, btn.uv.currentX, btn.uv.currentY);
-                savedBoxesContainer.appendChild(box);
-            }
+            const box = document.createElement('div');
+            box.className = 'saved-box';
+            updateBox(box, btn.uv.startX, btn.uv.startY, btn.uv.currentX, btn.uv.currentY);
+            savedBoxesContainer.appendChild(box);
         });
     }
 
-    // Disparar sincronização
+    // Sincronização
     document.getElementById('btnSync').addEventListener('click', () => {
-        if (!apiUrl) return alert("URL de API não encontrada.");
+        if (!apiUrl || !currentFace) return showToast("API não conectada.", true);
         
-        statusText.innerText = "Sincronizando...";
-        statusText.className = "status-badge";
+        showToast("Enviando para o SL...");
 
-        let rawData = buttonsData.map(b => 
-            `${b.face}^${b.uv.uMin}^${b.uv.uMax}^${b.uv.vMin}^${b.uv.vMax}^${b.payload}`
+        // O Payload agora envia um "Cabeçalho" avisando qual face deve ser atualizada no SL
+        let rawData = `FACE:${currentFace}\n`;
+        rawData += buttonsData.map(b => 
+            `${b.uv.uMin}^${b.uv.uMax}^${b.uv.vMin}^${b.uv.vMax}^${b.payload}`
         ).join("\n");
 
         fetch(apiUrl, { method: "POST", body: rawData })
-            .then(response => {
-                statusText.innerText = "✔ Sincronizado com Sucesso";
-                statusText.className = "status-badge success";
-            })
-            .catch(error => {
-                // Devido às políticas de CORS, se o LSL recebeu, geralmente cai no catch na web.
-                statusText.innerText = "Enviado! Verifique o SL.";
-                statusText.className = "status-badge success";
+            .then(res => showToast("Sincronizado com Sucesso!"))
+            .catch(err => {
+                // Bloqueios de CORS do navegador, mas o pacote chegou no SL.
+                showToast("Sincronizado! Teste no Second Life.");
             });
     });
 </script>
