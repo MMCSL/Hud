@@ -1,1 +1,167 @@
-# Hud
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMC - Mapeamento de HUD</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #222; color: #fff; padding: 20px; display: flex; gap: 20px; }
+        .panel { background: #333; padding: 20px; border-radius: 8px; width: 350px; }
+        .canvas-container { position: relative; display: inline-block; border: 2px solid #555; }
+        #hudImage { max-width: 800px; display: none; }
+        .selection-box { position: absolute; border: 2px dashed #7eff7e; background: rgba(126, 255, 126, 0.2); pointer-events: none; display: none; }
+        input, select, button, textarea { width: 100%; margin-top: 10px; padding: 8px; box-sizing: border-box; background: #444; color: #fff; border: 1px solid #555; border-radius: 4px;}
+        button { background: #ff3636; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 20px;}
+        button:hover { background: #e02f2f; }
+        h2, h3 { margin-top: 0; color: #7eff7e; }
+        textarea { height: 150px; font-family: monospace; resize: vertical; }
+    </style>
+</head>
+<body>
+
+    <div class="panel">
+        <h2>MMC Smart Setup</h2>
+        <label>1. Carregue a textura do seu HUD:</label>
+        <input type="file" id="imageLoader" accept="image/*">
+        
+        <hr style="border-color: #555; margin: 20px 0;">
+        
+        <h3>Configuração do Botão</h3>
+        <label>Comando:</label>
+        <select id="cmdSelect">
+            <option value="TEXTURE">TEXTURE</option>
+            <option value="COLOR">COLOR</option>
+            <option value="ALPHA">ALPHA</option>
+            <option value="MAT_NORMAL">MAT_NORMAL</option>
+            <option value="MAT_SPECULAR">MAT_SPECULAR</option>
+        </select>
+        
+        <label>Valor (UUID, Cor <1,1,1>, etc):</label>
+        <input type="text" id="valInput" placeholder="Ex: 6213f6d3-c3b3-476a-495d...">
+        
+        <label>Target Mesh (Nome do prim alvo ou ALL):</label>
+        <input type="text" id="meshInput" value="Dress">
+        
+        <label>Target Face (Número, ALL ou ex: 1,2):</label>
+        <input type="text" id="faceInput" value="ALL">
+        
+        <button id="addBtn">ADICIONAR BOTÃO (Desenhe primeiro)</button>
+        
+        <hr style="border-color: #555; margin: 20px 0;">
+        
+        <label>Código Gerado (Copie para o Loader no SL):</label>
+        <textarea id="outputCode" readonly></textarea>
+        <button onclick="document.getElementById('outputCode').value = ''; btnCount = 1;" style="background: #555;">Limpar Código</button>
+    </div>
+
+    <div>
+        <h3 id="instructionText">Aguardando imagem...</h3>
+        <div class="canvas-container" id="container">
+            <img id="hudImage" src="" alt="HUD">
+            <div class="selection-box" id="selectionBox"></div>
+        </div>
+    </div>
+
+<script>
+    const imageLoader = document.getElementById('imageLoader');
+    const hudImage = document.getElementById('hudImage');
+    const container = document.getElementById('container');
+    const selectionBox = document.getElementById('selectionBox');
+    const outputCode = document.getElementById('outputCode');
+    const instructionText = document.getElementById('instructionText');
+
+    let isDrawing = false;
+    let startX, startY, currentX, currentY;
+    let uvData = null;
+    let btnCount = 1;
+
+    // Carrega a imagem
+    imageLoader.addEventListener('change', function(e) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            hudImage.src = event.target.result;
+            hudImage.style.display = 'block';
+            instructionText.innerText = "2. Clique e arraste na imagem para desenhar a área do botão.";
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    });
+
+    // Lógica de desenho da caixa de seleção
+    container.addEventListener('mousedown', (e) => {
+        if(hudImage.style.display === 'none') return;
+        const rect = hudImage.getBoundingClientRect();
+        startX = e.clientX - rect.left;
+        startY = e.clientY - rect.top;
+        isDrawing = true;
+        selectionBox.style.display = 'block';
+        updateBox(startX, startY, startX, startY);
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        if (!isDrawing) return;
+        const rect = hudImage.getBoundingClientRect();
+        currentX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        currentY = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
+        updateBox(startX, startY, currentX, currentY);
+    });
+
+    container.addEventListener('mouseup', () => {
+        if (!isDrawing) return;
+        isDrawing = false;
+        calculateUV();
+    });
+
+    function updateBox(x1, y1, x2, y2) {
+        const minX = Math.min(x1, x2);
+        const minY = Math.min(y1, y2);
+        const width = Math.abs(x2 - x1);
+        const height = Math.abs(y2 - y1);
+        selectionBox.style.left = minX + 'px';
+        selectionBox.style.top = minY + 'px';
+        selectionBox.style.width = width + 'px';
+        selectionBox.style.height = height + 'px';
+    }
+
+    // Converte Pixels da Web para UV do Second Life
+    function calculateUV() {
+        const width = hudImage.clientWidth;
+        const height = hudImage.clientHeight;
+
+        const minX = Math.min(startX, currentX);
+        const maxX = Math.max(startX, currentX);
+        const minY = Math.min(startY, currentY);
+        const maxY = Math.max(startY, currentY);
+
+        const uMin = (minX / width).toFixed(3);
+        const uMax = (maxX / width).toFixed(3);
+        
+        // SL V-Axis é invertido em relação à Web
+        const vMin = (1.0 - (maxY / height)).toFixed(3); 
+        const vMax = (1.0 - (minY / height)).toFixed(3);
+
+        uvData = { uMin, uMax, vMin, vMax };
+    }
+
+    // Gera o código final LSL
+    document.getElementById('addBtn').addEventListener('click', () => {
+        if (!uvData) {
+            alert("Você precisa desenhar uma área na imagem primeiro!");
+            return;
+        }
+
+        const cmd = document.getElementById('cmdSelect').value;
+        const val = document.getElementById('valInput').value || "NULL";
+        const mesh = document.getElementById('meshInput').value || "ALL";
+        const face = document.getElementById('faceInput').value || "ALL";
+
+        const payload = `${cmd}|${val}|${mesh}|${face}`;
+        
+        // Formata a string em formato JSON nativo para o LSL ler via LinksetData
+        const lslCommand = `llLinksetDataWrite("btn:${(btnCount < 10 ? '0' : '') + btnCount}", "[${uvData.uMin}, ${uvData.uMax}, ${uvData.vMin}, ${uvData.vMax}, \\"${payload}\\"]");\n`;
+        
+        outputCode.value += lslCommand;
+        btnCount++;
+    });
+</script>
+</body>
+</html>
